@@ -1,7 +1,6 @@
 ; extern "C" int IntegerAddSub_(int a, int b, int c, int d);
 section .text
-global IntegerAddSub_
-
+global IntegerAddSub
 ; IntegerAddSub_ - Calculate a + b + c - d
 ;
 ; Parameters:
@@ -11,11 +10,9 @@ global IntegerAddSub_
 ;   rcx = d
 ; Returns:
 ;   rax = a + b + c - d
-IntegerAddSub_:
+IntegerAddSub:
     mov     rax, rdi       ; rax = a
     add     rax, rsi       ; rax = a + b
     add     rax, rdx       ; rax = a + b + c
     sub     rax, rcx       ; rax = a + b + c - d
     ret
-
- ;;-f elf64

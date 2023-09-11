@@ -1,22 +1,31 @@
 cmake_minimum_required(VERSION 3.26)
+project (untitled)
 
-# Set the C++ standard to C++23
+#Set C++ language version
 set(CMAKE_CXX_STANDARD 23)
+#Enable ASM provided by NASM
+enable_language(ASM_NASM)
 
-# Specify the assembly language format (macho64)
-set(CMAKE_ASM_NASM_OBJECT_FORMAT macho64)
+if(APPLE)
+    #Add leading underscore when building macho64 object files
+    string(APPEND CMAKE_ASM_NASM_FLAGS "--prefix _")
+endif(APPLE)
 
-# Define your project
-project(untitled1)
 
-# Add the main.cpp and main_.asm files to the executable
-add_executable(untitled1 main_.asm main.cpp)
+#If the goal is to interact with C++ code and assembly code, calling convention
+#changes between platform, some adjustment on the assembly code is required.
 
-# Add the assembly language source file as an OBJECT library
-add_library(assembly_code OBJECT main_.asm)
+#The following will pre-define a NASM macro "WIN32". This permit to conditionally assemble
+#code in the following manner :
+#  %ifdef WIN32
+#     ;code for Windows ABI
+#  %else
+#     ;code for System V AMD64 ABI
+#  %endif
+if(WIN32)
+    string(APPEND CMAKE_ASM_NASM_FLAGS "-dWIN32=1")
+endif(WIN32)
 
-# Set the linker language for untitled1 to CXX (optional, as CMake will do this automatically)
-set_target_properties(untitled1 PROPERTIES LINKER_LANGUAGE CXX)
 
-# Link the assembly_code object library to the untitled1 executable
-target_link_libraries(untitled1 PRIVATE $<TARGET_OBJECTS:assembly_code>)
+#Make a EXE with cpp and asm files
+add_executable(cmake-cpp-nasm main.cpp main_.asm)
